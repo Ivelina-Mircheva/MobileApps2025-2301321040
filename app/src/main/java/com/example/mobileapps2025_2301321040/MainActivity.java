@@ -1,5 +1,7 @@
 package com.example.mobileapps2025_2301321040;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -62,7 +64,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onBookLongClick(Book book) {
-
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Delete book")
+                        .setMessage("Are you sure you want to delete this book?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                viewModel.delete(book);
+                            }
+                        })
+                        .setNegativeButton("No", null).show();
             }
         });
 
