@@ -27,6 +27,23 @@ public class MainActivity extends AppCompatActivity {
     private BookListAdapter adapter;
     private BookViewModel viewModel;
 
+    //share book method
+    private void shareBook(Book book) {
+        //create a text string with information about the book
+        String shareText = "TITLE: " + book.getTitle() + "\n"
+                + "AUTHOR: " + book.getAuthor() + "\n"
+                + "GENRE: " + book.getGenre() + "\n"
+                + "YEAR: " + book.getYear() + "\n"
+                + "DESCRIPTION: " + book.getDescription();
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND); //create a new Intent to send content
+        shareIntent.setType("text/plain"); //specify that plain text will be sent
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText); //add the book information text to the intent
+
+        //starts sharing and displaying an application selection dialog
+        startActivity(Intent.createChooser(shareIntent, "Share Book"));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,15 +68,27 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnBookClickListener(new BookListAdapter.OnBookClickListener() {
             @Override
             public void onBookClick(Book book) {
-                //open BookFormActivity to edit the book
-                Intent intent = new Intent(MainActivity.this, BookFormActivity.class);
-                intent.putExtra("id", book.getId());
-                intent.putExtra("title", book.getTitle());
-                intent.putExtra("author", book.getAuthor());
-                intent.putExtra("genre", book.getGenre());
-                intent.putExtra("year", book.getYear());
-                intent.putExtra("description", book.getDescription());
-                startActivity(intent);
+                //Show options dialog
+                String[] options = {"Edit", "Share"};
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(book.getTitle())
+                        .setItems(options, (dialog, which) -> {
+                            if (which == 0){
+                                //open BookFormActivity to edit the book
+                                Intent intent = new Intent(MainActivity.this, BookFormActivity.class);
+                                intent.putExtra("id", book.getId());
+                                intent.putExtra("title", book.getTitle());
+                                intent.putExtra("author", book.getAuthor());
+                                intent.putExtra("genre", book.getGenre());
+                                intent.putExtra("year", book.getYear());
+                                intent.putExtra("description", book.getDescription());
+                                startActivity(intent);
+                            }else if (which == 1){
+                                //share a book
+                                shareBook(book);
+                            }
+                        }).show();
             }
 
             @Override
